@@ -1,6 +1,6 @@
 # COVID-19-Database-Challenge
 
-Implement database structure to deal with covid-19 and save the world!
+Implement database structure to deal with covid-19 to save the world!
 
 - Use Django-1.11 and Python 2.7
 - Requirements:
