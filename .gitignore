@@ -1,0 +1,4 @@
+venv
+django_db_schema/db.sqlite3
+.idea
+*.pyc
