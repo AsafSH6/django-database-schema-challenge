@@ -5,61 +5,70 @@ from django.db import models
 
 
 class Hospital(models.Model):
-    name = models.CharField(max_length=100, null=False, blank=False)
+    name = models.CharField(max_length=100, null=False, blank=False,
+                            db_index=True)
     city = models.CharField(max_length=100, null=False, blank=False)
 
     def __str__(self):
         return self.name
-
-    class Meta:
-        indexes = [
-            models.Index(fields=['name'])
-        ]
 
 
 class Department(models.Model):
     hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE,
                                  related_name="departments", null=False,
                                  blank=False)
-    name = models.CharField(max_length=100, null=False, blank=False)
+    name = models.CharField(max_length=100, null=False, blank=False,
+                            db_index=True)
 
     def __str__(self):
         return self.name
 
 
 class Person(models.Model):
-    name = models.CharField(max_length=100, null=False, blank=False)
-    age = models.PositiveSmallIntegerField(null=True, blank=True)
-    gender = models.CharField(max_length=1,
-                              choices=[('M', 'Male'), ('F', 'Female'),
-                                       ('O', 'Other')], null=False,
-                              blank=False)
+    GENDER_MALE = "Male"
+    GENDER_FEMALE = "Female"
+    GENDER_OTHER = "Other"
 
-    class Meta:
-        abstract = True
+    name = models.CharField(max_length=100, null=False, blank=False,
+                            db_index=True)
+    age = models.PositiveSmallIntegerField(null=True, blank=True)
+    gender = models.CharField(max_length=10,
+                              choices=[(GENDER_MALE, GENDER_MALE),
+                                       (GENDER_FEMALE, GENDER_FEMALE),
+                                       (GENDER_OTHER, GENDER_OTHER)],
+                              null=False,
+                              blank=False)
 
     def __str__(self):
         return self.name
 
 
-class HospitalWorker(Person):
+class HospitalWorker(models.Model):
+    person = models.ForeignKey(Person, on_delete=models.CASCADE, null=False,
+                               blank=False)
+    departments = models.ManyToManyField(Department, related_name="workers",
+                                         blank=False, through='DepartmentWork')
+
+
+class DepartmentWork(models.Model):
     POSITION_DOCTOR = 'Doctor'
     POSITION_NURSE = 'Nurse'
-    departments = models.ManyToManyField(Department, related_name="workers",
-                                         blank=False)
+
+    hospital_worker = models.ForeignKey(HospitalWorker,
+                                        on_delete=models.CASCADE, null=False,
+                                        blank=False)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE,
+                                   null=False,
+                                   blank=False)
     position = models.CharField(max_length=10,
                                 choices=[(POSITION_DOCTOR, POSITION_DOCTOR),
                                          (POSITION_NURSE, POSITION_NURSE)],
                                 null=False, blank=False)
 
-    class Meta:
-        indexes = [
-            models.Index(fields=['position'])
-        ]
 
-
-class Patient(Person):
-    pass
+class Patient(models.Model):
+    person = models.ForeignKey(Person, on_delete=models.CASCADE, null=False,
+                               blank=False)
 
 
 class ExaminationResult(models.Model):
@@ -69,13 +78,14 @@ class ExaminationResult(models.Model):
     RESULT_DEAD = 'Dead'
 
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE,
-                                related_name="results", null=False, blank=False)
+                                related_name="examination_results", null=False,
+                                blank=False)
     time = models.DateTimeField(null=False, blank=False, auto_now_add=False,
                                 auto_now=False)
     examiner = models.ForeignKey(HospitalWorker, on_delete=models.CASCADE,
-                                 related_name="results", null=False,
+                                 related_name="examination_results", null=False,
                                  blank=False)
-    result = models.CharField(max_length=1,
+    result = models.CharField(max_length=10,
                               choices=[(RESULT_HEALTHY, RESULT_HEALTHY),
                                        (RESULT_CORONA, RESULT_CORONA),
                                        (RESULT_BOTISM, RESULT_BOTISM),
@@ -85,8 +95,3 @@ class ExaminationResult(models.Model):
     def __str__(self):
         return "%s %s" % (
             self.patient.name, str(self.time.strftime("%d-%m-%Y %H:%M")))
-
-    class Meta:
-        indexes = [
-            models.Index(fields=['result'])
-        ]
