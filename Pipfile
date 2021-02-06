@@ -55,6 +55,7 @@ zipp = "==1.2.0"
 [dev-packages]
 pylint = "*"
 ipdb = "*"
+ipython = "*"
 
 [requires]
 python_version = "2.7"

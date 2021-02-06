@@ -13,6 +13,7 @@ class Examination(models.Model):
 
     worker = models.ForeignKey(Worker)
     patient = models.ForeignKey(Patient)
+    time = models.DateTimeField(auto_now=True)
     results = models.CharField(choices=RESULTS, max_length=20)
 
     class Meta:
