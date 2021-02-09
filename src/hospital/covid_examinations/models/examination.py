@@ -1,4 +1,6 @@
 """Corona examination model."""
+import datetime
+
 from django.db import models
 
 from patient import Patient
@@ -20,7 +22,8 @@ class Examination(models.Model):
         }.items()
     )
 
-    time = models.DateTimeField(auto_now=True, blank=False, null=False)
+    time = models.DateTimeField(default=datetime.datetime.now, blank=False,
+                                null=False)
     worker = models.ForeignKey(HospitalWorker,
                                related_name="performed_examinations",
                                blank=False, null=False)
