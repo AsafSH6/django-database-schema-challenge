@@ -22,15 +22,25 @@ class Examination(models.Model):
         }.items()
     )
 
-    time = models.DateTimeField(default=datetime.datetime.now, blank=False,
-                                null=False)
+    results = models.CharField(null=False,
+                               blank=False,
+                               choices=RESULTS,
+                               max_length=20)
+
+    time = models.DateTimeField(null=False,
+                                blank=False,
+                                default=datetime.datetime.now)
+
+    patient = models.ForeignKey(Patient,
+                                null=False,
+                                blank=False,
+                                related_name="examinations_history")
+
     worker = models.ForeignKey(HospitalWorker,
-                               related_name="performed_examinations",
-                               blank=False, null=False)
-    patient = models.ForeignKey(Patient, related_name="examinations_history",
-                                blank=False, null=False)
-    results = models.CharField(choices=RESULTS, max_length=20, blank=False,
-                               null=False)
+                               null=False,
+                               blank=False,
+                               related_name="performed_examinations")
+
 
     class Meta:
         app_label = "covid_examinations"

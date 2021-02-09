@@ -15,11 +15,18 @@ class Person(models.Model):
         }.items()
     )
 
-    age = models.PositiveSmallIntegerField(blank=False, null=False)
-    name = models.CharField(max_length=30, db_index=True, blank=False,
-                            null=False)
-    gender = models.CharField(choices=GENDERS, max_length=20, blank=False,
-                              null=False)
+    age = models.PositiveSmallIntegerField(null=False,
+                                           blank=False)
+
+    name = models.CharField(null=False,
+                            blank=False,
+                            max_length=30,
+                            db_index=True)
+
+    gender = models.CharField(null=False,
+                              blank=False,
+                              max_length=20,
+                              choices=GENDERS)
 
     class Meta:
         app_label = "covid_examinations"

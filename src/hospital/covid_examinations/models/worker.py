@@ -16,17 +16,24 @@ class HospitalWorker(Person):
         }.items()
     )
 
-    personal_information = models.OneToOneField(Person, blank=False,
+    job = models.CharField(null=False,
+                           blank=False,
+                           choices=JOBS,
+                           max_length=20)
+
+    department = models.ForeignKey(Department,
+                                   null=False,
+                                   blank=False,
+                                   related_name="workers",
+                                   on_delete=models.CASCADE)
+
+    personal_information = models.OneToOneField(Person,
                                                 null=False,
+                                                blank=False,
                                                 primary_key=True,
                                                 on_delete=models.CASCADE,
                                                 related_name=
                                                 "hospital_position")
-    job = models.CharField(choices=JOBS, max_length=20, blank=False,
-                           null=False)
-    department = models.ForeignKey(Department, related_name="workers",
-                                   on_delete=models.CASCADE, blank=False,
-                                   null=False)
 
     class Meta:
         app_label = "covid_examinations"
