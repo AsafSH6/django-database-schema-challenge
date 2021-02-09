@@ -5,14 +5,28 @@ from person import Person
 from department import Department
 
 
-class Worker(Person):
-    JOBS = tuple({
-        "D": "Doctor",
-        "N": "Nurse",
-    }.items())
+class HospitalWorker(Person):
+    NURSE = "Nurse"
+    DOCTOR = "Doctor"
 
-    job = models.CharField(choices=JOBS, max_length=20)
-    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+    JOBS = tuple(
+        {
+            NURSE: NURSE,
+            DOCTOR: DOCTOR,
+        }.items()
+    )
+
+    personal_information = models.OneToOneField(Person, blank=False,
+                                                null=False,
+                                                primary_key=True,
+                                                on_delete=models.CASCADE,
+                                                related_name=
+                                                "hospital_position")
+    job = models.CharField(choices=JOBS, max_length=20, blank=False,
+                           null=False)
+    department = models.ForeignKey(Department, related_name="workers",
+                                   on_delete=models.CASCADE, blank=False,
+                                   null=False)
 
     class Meta:
         app_label = "covid_examinations"

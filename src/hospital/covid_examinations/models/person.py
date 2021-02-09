@@ -1,21 +1,25 @@
 """Person model."""
 from django.db import models
-from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Person(models.Model):
-    GENDERS = tuple({
-        "M": "Male",
-        "H": "Habra",
-        "O": "Other",
-        "F": "Female",
-    }.items())
+    MALE = "Male"
+    OTHER = "Other"
+    FEMALE = "Female"
 
-    name = models.CharField(max_length=30)
-    gender = models.CharField(choices=GENDERS, max_length=20)
-    age = models.IntegerField(validators=[MaxValueValidator(120),
-                                          MinValueValidator(18)])
+    GENDERS = tuple(
+        {
+            MALE: MALE,
+            OTHER: OTHER,
+            FEMALE: FEMALE
+        }.items()
+    )
+
+    age = models.PositiveSmallIntegerField(blank=False, null=False)
+    name = models.CharField(max_length=30, db_index=True, blank=False,
+                            null=False)
+    gender = models.CharField(choices=GENDERS, max_length=20, blank=False,
+                              null=False)
 
     class Meta:
-        abstract = True
         app_label = "covid_examinations"
