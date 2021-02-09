@@ -5,7 +5,7 @@ from person import Person
 from department import Department
 
 
-class HospitalWorker(Person):
+class HospitalWorker(models.Model):
     NURSE = "Nurse"
     DOCTOR = "Doctor"
 

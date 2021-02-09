@@ -5,7 +5,7 @@ from person import Person
 from department import Department
 
 
-class Patient(Person):
+class Patient(models.Model):
     department = models.ForeignKey(Department,
                                    null=False,
                                    blank=False,

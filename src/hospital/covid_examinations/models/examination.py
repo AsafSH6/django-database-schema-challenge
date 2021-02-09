@@ -41,6 +41,5 @@ class Examination(models.Model):
                                blank=False,
                                related_name="performed_examinations")
 
-
     class Meta:
         app_label = "covid_examinations"
