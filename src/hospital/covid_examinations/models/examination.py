@@ -1,6 +1,4 @@
 """Corona examination model."""
-import datetime
-
 from django.db import models
 
 from patient import Patient

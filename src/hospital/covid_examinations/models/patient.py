@@ -15,5 +15,8 @@ class Patient(models.Model):
     personal_information = models.ForeignKey(Person,
                                              null=False,
                                              blank=False,
-                                             related_name="patient",
+                                             related_name="patients",
                                              on_delete=models.CASCADE)
+
+    class Meta:
+        app_label = "covid_examinations"
