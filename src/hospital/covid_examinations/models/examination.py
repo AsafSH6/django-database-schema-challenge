@@ -28,8 +28,9 @@ class Examination(models.Model):
                                max_length=20)
 
     time = models.DateTimeField(null=False,
-                                blank=False,
-                                default=datetime.datetime.now)
+                                blank=True,
+                                auto_now=False,
+                                auto_now_add=True)
 
     patient = models.ForeignKey(Patient,
                                 null=False,

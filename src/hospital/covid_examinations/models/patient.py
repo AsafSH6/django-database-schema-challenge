@@ -17,4 +17,4 @@ class Patient(models.Model):
                                              blank=False,
                                              on_delete=models.CASCADE,
                                              related_name=
-                                             "treating_departments")
+                                             "patients")

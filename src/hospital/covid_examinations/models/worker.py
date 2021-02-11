@@ -27,13 +27,13 @@ class HospitalWorker(models.Model):
                                    related_name="workers",
                                    on_delete=models.CASCADE)
 
-    personal_information = models.OneToOneField(Person,
-                                                null=False,
-                                                blank=False,
-                                                primary_key=True,
-                                                on_delete=models.CASCADE,
-                                                related_name=
-                                                "hospital_position")
+    personal_information = models.ForeignKey(Person,
+                                             null=False,
+                                             blank=False,
+                                             primary_key=True,
+                                             on_delete=models.CASCADE,
+                                             related_name=
+                                             "hospital_position")
 
     class Meta:
         app_label = "covid_examinations"
