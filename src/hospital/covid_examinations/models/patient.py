@@ -15,6 +15,5 @@ class Patient(models.Model):
     personal_information = models.ForeignKey(Person,
                                              null=False,
                                              blank=False,
-                                             on_delete=models.CASCADE,
-                                             related_name=
-                                             "patients")
+                                             related_name="patient",
+                                             on_delete=models.CASCADE)
