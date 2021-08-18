@@ -14,12 +14,15 @@ class Hospital(models.Model):
     def __unicode__(self):
         return repr(self)
 
+    def __str__(self):
+        return repr(self)
 
-class Department(models.Model):
+
+class HospitalDepartment(models.Model):
     name = models.CharField(db_index=True, max_length=255, blank=False, null=False, )
     hospital = models.ForeignKey(
         to=Hospital,
-        related_name='departments',
+        related_name='hospital_departments',
         null=False,
         blank=False,
         on_delete=models.CASCADE,
@@ -34,6 +37,8 @@ class Department(models.Model):
     def __unicode__(self):
         return repr(self)
 
+    def __str__(self):
+        return repr(self)
 
 class Person(models.Model):
     GENDER_MALE = 'Male'
@@ -54,6 +59,9 @@ class Person(models.Model):
     def __unicode__(self):
         return repr(self)
 
+    def __str__(self):
+        return repr(self)
+
 
 class HospitalWorker(models.Model):
     POSITION_DOCTOR = 'Doctor'
@@ -67,7 +75,7 @@ class HospitalWorker(models.Model):
         on_delete=models.CASCADE,
     )
     department = models.ForeignKey(
-        to=Department,
+        to=HospitalDepartment,
         related_name='hospital_workers',
         null=False,
         on_delete=models.CASCADE,
@@ -87,8 +95,11 @@ class HospitalWorker(models.Model):
     def __unicode__(self):
         return repr(self)
 
+    def __str__(self):
+        return repr(self)
 
-class Patient(models.Model):
+
+class HospitalPatient(models.Model):
     person = models.ForeignKey(
         to=Person,
         related_name='patients_details',
@@ -97,7 +108,7 @@ class Patient(models.Model):
         on_delete=models.CASCADE,
     )
     department = models.ForeignKey(
-        to=Department,
+        to=HospitalDepartment,
         related_name='patients_details',
         null=False,
         blank=False,
@@ -105,12 +116,15 @@ class Patient(models.Model):
     )
 
     def __repr__(self):
-        return '<Patient {person} in {department}>'.format(
+        return '<Hospital patient {person} in {department}>'.format(
             person=self.person,
             department=self.department
         )
 
     def __unicode__(self):
+        return repr(self)
+
+    def __str__(self):
         return repr(self)
 
 
@@ -129,7 +143,7 @@ class MedicalExaminationResult(models.Model):
         on_delete=models.CASCADE,
     )
     patient = models.ForeignKey(
-        to=Patient,
+        to=HospitalPatient,
         related_name='medical_examination_results',
         null=False,
         blank=False,
@@ -149,4 +163,7 @@ class MedicalExaminationResult(models.Model):
         )
 
     def __unicode__(self):
+        return repr(self)
+
+    def __str__(self):
         return repr(self)
