@@ -13,7 +13,7 @@ class Hospital(models.Model):
 
 
 class Department(models.Model):
-    hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE,
+    hospital = models.ForeignKey(to=Hospital, on_delete=models.CASCADE,
                                  related_name='departments',
                                  default='',
                                  null=False,
@@ -21,7 +21,7 @@ class Department(models.Model):
     name = models.CharField(db_index=True, max_length=200, default='', null=False, blank=False)
 
     def __str__(self):
-        return "department {}".format(self.name)
+        return "{}".format(self.name)
 
 
 class People(models.Model):
@@ -36,21 +36,35 @@ class People(models.Model):
         return self.name
 
 
-class Worker(People):
+class Worker(models.Model):
     JOBS = [('Doctor', 'Doctor'),
             ('Nurse', 'Nurse')]
+    people = models.ForeignKey(to=People, on_delete=models.CASCADE,
+                               related_name='worker_person',
+                               default='',
+                               null=False,
+                               blank=False)
     role = models.CharField(max_length=50, choices=JOBS, default='Doctor', null=False, blank=False)
-    department = models.ManyToManyField(Department, null=False, blank=False)
+    department = models.ForeignKey(to=Department, on_delete=models.CASCADE,
+                                   related_name='worker_department',
+                                   default='',
+                                   null=False,
+                                   blank=False)
 
     def __str__(self):
-        return "{} {} works in {}".format(self.role, self.name, self.department)
+        return "{} {} works in {} {}".format(self.role, self.people, self.department, self.department.hospital)
 
 
-class Patient(People):
-    department_in = models.ForeignKey(Department, on_delete=models.CASCADE, null=False, blank=False)
+class Patient(models.Model):
+    people = models.ForeignKey(to=People, on_delete=models.CASCADE,
+                               related_name='patient_person',
+                               default='',
+                               null=False,
+                               blank=False)
+    department_in = models.ForeignKey(to=Department, on_delete=models.CASCADE, null=False, blank=False)
 
     def __str__(self):
-        return "{} in {}".format(self.people_name, self.department_in)
+        return "{} in {}".format(self.people, self.department_in)
 
 
 class MedicalExamination(models.Model):
@@ -64,8 +78,8 @@ class MedicalExamination(models.Model):
                (DEAD, DEAD)]
     date = models.DateTimeField("exam date", auto_now=False, auto_now_add=False
                                 )
-    worker = models.ForeignKey(Worker, on_delete=models.CASCADE, null=False, blank=False)
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=False, blank=False)
+    worker = models.ForeignKey(to=Worker, on_delete=models.CASCADE, null=False, blank=False)
+    patient = models.ForeignKey(to=Patient, on_delete=models.CASCADE, null=False, blank=False)
     result = models.CharField(max_length=20, choices=RESULTS, default=HEALTY, null=False, blank=False)
 
     def __str__(self):

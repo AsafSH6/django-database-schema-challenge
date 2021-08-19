@@ -10,6 +10,8 @@ admin.site.register(models.Department)
 admin.site.register(models.Worker)
 admin.site.register(models.Patient)
 admin.site.register(models.MedicalExamination)
+admin.site.register(models.People)
+
 
 
 
