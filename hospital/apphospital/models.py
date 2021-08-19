@@ -24,13 +24,12 @@ class Department(models.Model):
         return "{}".format(self.name)
 
 
-class People(models.Model):
-    GENDER_TYPES = [('Male', 'Male'),
-                    ('Female', 'Female'),
-                    ('Other', 'Other')]
+class Person(models.Model):
     name = models.CharField(db_index=True, max_length=200, default='', null=False, blank=False)
-    age = models.CharField(max_length=200, default=0, null=False, blank=True)
-    gender = models.CharField(max_length=200, choices=GENDER_TYPES, default="Male", null=False, blank=False)
+    age = models.PositiveIntegerField(default=0, null=False, blank=True)
+    gender = models.CharField(max_length=200, choices=[('Male', 'Male'),
+                                                       ('Female', 'Female'),
+                                                       ('Other', 'Other')], null=False, blank=False)
 
     def __str__(self):
         return self.name
@@ -39,7 +38,7 @@ class People(models.Model):
 class Worker(models.Model):
     JOBS = [('Doctor', 'Doctor'),
             ('Nurse', 'Nurse')]
-    people = models.ForeignKey(to=People, on_delete=models.CASCADE,
+    Person = models.ForeignKey(to=Person, on_delete=models.CASCADE,
                                related_name='worker_person',
                                default='',
                                null=False,
@@ -52,11 +51,12 @@ class Worker(models.Model):
                                    blank=False)
 
     def __str__(self):
-        return "{} {} works in {} {}".format(self.role, self.people, self.department, self.department.hospital)
+        return "class {} - {} {} works in {} {}".format(type(self).__name__, self.role, self.Person, self.department,
+                                                        self.department.hospital)
 
 
 class Patient(models.Model):
-    people = models.ForeignKey(to=People, on_delete=models.CASCADE,
+    Person = models.ForeignKey(to=Person, on_delete=models.CASCADE,
                                related_name='patient_person',
                                default='',
                                null=False,
@@ -64,7 +64,7 @@ class Patient(models.Model):
     department_in = models.ForeignKey(to=Department, on_delete=models.CASCADE, null=False, blank=False)
 
     def __str__(self):
-        return "{} in {}".format(self.people, self.department_in)
+        return "class {} - {} in {}".format(type(self).__name__, self.Person, self.department_in)
 
 
 class MedicalExamination(models.Model):
@@ -83,5 +83,5 @@ class MedicalExamination(models.Model):
     result = models.CharField(max_length=20, choices=RESULTS, default=HEALTY, null=False, blank=False)
 
     def __str__(self):
-        return "date: {} exam result {}".format(self.date,
-                                                self.result)
+        return "class {} - date: {} exam result {}".format(type(self).__name__, self.date,
+                                                           self.result)
