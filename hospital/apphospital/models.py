@@ -1,87 +1,96 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import datetime
 from django.db import models
 
 
 class Hospital(models.Model):
-    name = models.CharField(db_index=True, max_length=200, default='', null=False, blank=False)
-    city = models.CharField(max_length=200, default='', null=False, blank=False)
+    name = models.CharField(db_index=True, max_length=200, null=False, blank=False)
+    city = models.CharField(max_length=200, null=False, blank=False)
 
     def __str__(self):
         return "ID{} - {}".format(self.pk, self.name)
 
 
-class Department(models.Model):
+class HospitalDepartment(models.Model):
     hospital = models.ForeignKey(to=Hospital, on_delete=models.CASCADE,
                                  related_name='departments',
-                                 default='',
                                  null=False,
                                  blank=False)
-    name = models.CharField(db_index=True, max_length=200, default='', null=False, blank=False)
+    name = models.CharField(db_index=True, max_length=200, null=False, blank=False)
 
     def __str__(self):
         return "{}".format(self.name)
 
 
-class Person(models.Model):
-    name = models.CharField(db_index=True, max_length=200, default='', null=False, blank=False)
-    age = models.PositiveIntegerField(default=0, null=False, blank=True)
-    gender = models.CharField(max_length=200, choices=[('Male', 'Male'),
-                                                       ('Female', 'Female'),
-                                                       ('Other', 'Other')], null=False, blank=False)
+class HospitalPerson(models.Model):
+    GENDER_MALE = 'MALE'
+    GENDER_FEMALE = 'FEMALE'
+    GENDER_OTHER = 'OTHER'
+    GENDER_CHOICES = [(GENDER_MALE, GENDER_MALE), (GENDER_FEMALE, GENDER_FEMALE), (GENDER_OTHER, GENDER_OTHER)]
+    name = models.CharField(db_index=True, max_length=200, null=False, blank=False)
+    age = models.PositiveSmallIntegerField(default=0, null=False, blank=True)
+    gender = models.CharField(max_length=200, choices=GENDER_CHOICES, null=False, blank=False)
 
     def __str__(self):
         return self.name
 
 
-class Worker(models.Model):
+class HospitalWorker(models.Model):
     JOBS = [('Doctor', 'Doctor'),
             ('Nurse', 'Nurse')]
-    Person = models.ForeignKey(to=Person, on_delete=models.CASCADE,
-                               related_name='worker_person',
-                               default='',
+    Person = models.ForeignKey(to=HospitalPerson, on_delete=models.CASCADE,
+                               related_name='department_worker',
                                null=False,
                                blank=False)
-    role = models.CharField(max_length=50, choices=JOBS, default='Doctor', null=False, blank=False)
-    department = models.ForeignKey(to=Department, on_delete=models.CASCADE,
-                                   related_name='worker_department',
-                                   default='',
+    role = models.CharField(max_length=50, choices=JOBS, null=False, blank=False)
+    department = models.ForeignKey(to=HospitalDepartment, on_delete=models.CASCADE,
+                                   related_name='department_worker',
                                    null=False,
                                    blank=False)
 
     def __str__(self):
-        return "class {} - {} {} works in {} {}".format(type(self).__name__, self.role, self.Person, self.department,
-                                                        self.department.hospital)
+        return "<{class_name} - {role} {name} works in {department} {hospital}>".format(
+            class_name=self.__class__.__name__,
+            role=self.role,
+            name=self.Person,
+            department=self.department,
+            hospital=self.department.hospital,
+        )
 
 
-class Patient(models.Model):
-    Person = models.ForeignKey(to=Person, on_delete=models.CASCADE,
-                               related_name='patient_person',
-                               default='',
+class HospitalPatient(models.Model):
+    Person = models.ForeignKey(to=HospitalPerson, on_delete=models.CASCADE,
+                               related_name='person_patient',
                                null=False,
                                blank=False)
-    department_in = models.ForeignKey(to=Department, on_delete=models.CASCADE, null=False, blank=False)
+    department_in = models.ForeignKey(to=HospitalDepartment, on_delete=models.CASCADE, related_name='person_department',
+                                      null=False, blank=False)
 
     def __str__(self):
-        return "class {} - {} in {}".format(type(self).__name__, self.Person, self.department_in)
+        return "<{class_name} - {name} hospitalized in {department} {hospital}>".format(
+            class_name=self.__class__.__name__, name=self.Person, department=self.department_in,
+            hospital=self.department_in.hospital)
 
 
 class MedicalExamination(models.Model):
-    HEALTY = 'Healty'
-    CORONA = 'Corona'
-    BOTISM = 'Botism'
-    DEAD = 'Dead'
-    RESULTS = [(HEALTY, HEALTY),
-               (CORONA, CORONA),
-               (BOTISM, BOTISM),
-               (DEAD, DEAD)]
-    date = models.DateTimeField("exam date", auto_now=False, auto_now_add=False
-                                )
-    worker = models.ForeignKey(to=Worker, on_delete=models.CASCADE, null=False, blank=False)
-    patient = models.ForeignKey(to=Patient, on_delete=models.CASCADE, null=False, blank=False)
-    result = models.CharField(max_length=20, choices=RESULTS, default=HEALTY, null=False, blank=False)
+    MEDICAL_EXAMINATION_HEALTHY = 'healthy'
+    MEDICAL_EXAMINATION_CORONA = 'Corona'
+    MEDICAL_EXAMINATION_BOTISM = 'Botism'
+    MEDICAL_EXAMINATION_DEAD = 'Dead'
+    RESULTS = [(MEDICAL_EXAMINATION_HEALTHY, MEDICAL_EXAMINATION_HEALTHY),
+               (MEDICAL_EXAMINATION_CORONA, MEDICAL_EXAMINATION_CORONA),
+               (MEDICAL_EXAMINATION_BOTISM, MEDICAL_EXAMINATION_BOTISM),
+               (MEDICAL_EXAMINATION_DEAD, MEDICAL_EXAMINATION_DEAD)]
+    date = models.DateTimeField("exam date", auto_now=False, auto_now_add=False)
+    worker = models.ForeignKey(to=HospitalWorker, on_delete=models.CASCADE, null=False, blank=False)
+    patient = models.ForeignKey(to=HospitalPatient, on_delete=models.CASCADE, null=False, blank=False)
+    result = models.CharField(max_length=20, choices=RESULTS, default=MEDICAL_EXAMINATION_HEALTHY, null=False,
+                              blank=False)
 
     def __str__(self):
-        return "class {} - date: {} exam result {}".format(type(self).__name__, self.date,
-                                                           self.result)
+        return "{class_name} - Patient {patient_name} tested by {worker_name} in  date: {date}. The exam result" \
+               " {exam_result}".format(class_name=self.__class__.__name__,
+                                       patient_name=self.patient,
+                                       worker_name=self.worker,
+                                       date=self.date,
+                                       exam_result=self.result)
